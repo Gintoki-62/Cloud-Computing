@@ -11,6 +11,6 @@
     }
     ?>
 
-    <h1>laji</h1>
+    <h1>lajiddd</h1>
 
 </body>
