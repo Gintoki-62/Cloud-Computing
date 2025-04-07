@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <body>
     <?php
-    include 'config.php'; // 引入数据库连接
+    include 'config.php';
 
     // 示例查询
     $result = mysqli_query($conn, "SELECT * FROM product");
