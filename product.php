@@ -40,6 +40,7 @@
 				<?php include '.vscode/config.php'; ?>
 				<?php $result = mysqli_query($conn, "SELECT * FROM product"); ?>
 				<?php while ($row = mysqli_fetch_assoc($result)) { ?>
+					
 				<div class="col-lg-4 col-md-6 text-center <?php echo $row['prod_type']; ?>">
 					<div class="single-product-item">
 						<div class="product-image">
@@ -47,47 +48,27 @@
 						</div>
 						<h3><?php echo $row['prod_name']; ?></h3>
 						<p class="product-price"><span>Price</span> RM  <?php echo $row['prod_price']; ?></p>
-						<a href="cart.php?action=add&id=<?php echo $row['prod_id']; ?>" class="cart-btn">
-    						<i class="fas fa-shopping-cart"></i> Add to Cart</a>
+						<!-- <a href="cart.php?action=add&id=<?php echo $row['prod_id']; ?>" class="cart-btn">
+    						<i class="fas fa-shopping-cart"></i> Add to Cart</a> -->
+							<form method="post" action="cart.php" class="add-to-cart-form">
+								<input type="hidden" name="prod_id" value="<?php echo $row['prod_id']; ?>">
+								<input type="hidden" name="prod_name" value="<?php echo $row['prod_name']; ?>">
+								<input type="hidden" name="prod_image" value="<?php echo $row['prod_image']; ?>">
+								<input type="hidden" name="prod_price" value="<?php echo $row['prod_price']; ?>">
+								<input type="hidden" name="quantity" value="1">
+								<button type="submit" class="cart-btn" >
+									<i class="fas fa-shopping-cart"></i> Add to Cart
+								</button>
+							</form>
+
 					</div>
 				</div>
 				<?php }?>
-				
 			</div>
-
 		</div>
 	</div>
 	<!-- end products -->
 
-	<!-- logo carousel -->
-	<div class="logo-carousel-section">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="logo-carousel-inner">
-						<div class="single-logo-item">
-							<img src="assets/img/company-logos/1.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="assets/img/company-logos/2.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="assets/img/company-logos/3.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="assets/img/company-logos/4.png" alt="">
-						</div>
-						<div class="single-logo-item">
-							<img src="assets/img/company-logos/5.png" alt="">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- end logo carousel -->
-	
 	<?php include 'footer.php'; ?>
-
 </body>
 </html>

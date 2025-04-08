@@ -40,7 +40,8 @@
             <div class="circle"></div>
         </div>
     </div>
-    <!--PreLoader Ends-->
+    <!-- PreLoader Ends -->
+    
 	<header>
         <!-- header -->
         <div class="top-header-area" id="sticker">
@@ -55,6 +56,21 @@
                                 </a>
                             </div>
                             <!-- logo -->
+<?php
+include '.vscode/config.php';
+
+// Count distinct products in the cart
+$result = mysqli_query($conn, "SELECT COUNT(DISTINCT prod_id) AS total_products FROM cart");
+
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $cart_count = $row['total_products'] ?? 0;  // Default to 0 if no products in the cart
+} else {
+    $cart_count = 0;  // If there's an error with the query, default to 0
+}
+
+echo $cart_count;  // Output the cart count (for testing purposes)
+?>
 
                             <!-- menu start -->
                             <nav class="main-menu">
@@ -67,7 +83,8 @@
                                     <li><a href="contact.php">Contact</a></li>
                                     <li>
                                         <div class="header-icons">
-                                            <a class="shopping-cart" href="cart.php"><i class="fas fa-shopping-cart"></i></a>
+                                            <a class="shopping-cart cart-icon-wrapper" href="cart.php"><i class="fas fa-shopping-cart"></i>
+                                            <span id="cart-count" class="cart-count-badge"><?php echo $cart_count; ?></span></a>
                                             <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
                                         </div>
                                     </li>
@@ -83,31 +100,27 @@
         </div>
         <!-- end header -->
         
-        <!-- search area -->
-
-
-<!-- Search Area -->
-<div class="search-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <span class="close-btn"><i class="fas fa-window-close"></i></span>
-                <div class="search-bar">
-                    <div class="search-bar-tablecell">
-                        <h3>Search For:</h3>
-                        <form method="GET" action="search.php">
-                            <input type="text" name="keyword" placeholder=" " required>
-                            <button type="submit">Search <i class="fas fa-search"></i></button>
-                        </form>
+    <!-- Search Area -->
+    <div class="search-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <span class="close-btn"><i class="fas fa-window-close"></i></span>
+                    <div class="search-bar">
+                        <div class="search-bar-tablecell">
+                            <h3>Search For:</h3>
+                            <form method="GET" action="search.php">
+                                <input type="text" name="keyword" placeholder=" " required>
+                                <button type="submit">Search <i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    <!-- end search area -->
 
-
-        <!-- end search area -->
         </header>
     </body>
 </html>
