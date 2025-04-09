@@ -56,21 +56,21 @@
                                 </a>
                             </div>
                             <!-- logo -->
-<?php
-include '.vscode/config.php';
+        <?php
+        include '.vscode/config.php';
 
-// Count distinct products in the cart
-$result = mysqli_query($conn, "SELECT COUNT(DISTINCT prod_id) AS total_products FROM cart");
+        // Count distinct products in the cart
+        $result = mysqli_query($conn, "SELECT COUNT(DISTINCT prod_id) AS total_products FROM cart");
 
-if ($result) {
-    $row = mysqli_fetch_assoc($result);
-    $cart_count = $row['total_products'] ?? 0;  // Default to 0 if no products in the cart
-} else {
-    $cart_count = 0;  // If there's an error with the query, default to 0
-}
+        if ($result) {
+            $row = mysqli_fetch_assoc($result);
+            $cart_count = $row['total_products'] ?? 0;  // Default to 0 if no products in the cart
+        } else {
+            $cart_count = 0;  // If there's an error with the query, default to 0
+        }
 
-echo $cart_count;  // Output the cart count (for testing purposes)
-?>
+        echo $cart_count;  // Output the cart count (for testing purposes)
+        ?>
 
                             <!-- menu start -->
                             <nav class="main-menu">

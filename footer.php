@@ -92,5 +92,25 @@
 	<!-- main js -->
 	<script src="assets/js/main.js"></script>
 
+	<script>
+		function saveScrollPosition() {
+			sessionStorage.setItem('scrollPos', window.scrollY);
+		}
+
+		// Save scroll position when navigating away
+		window.addEventListener('beforeunload', saveScrollPosition);
+
+		// On page load: hide loader + restore scroll
+		window.addEventListener('load', function() {
+			document.querySelector('.loader').style.display = 'none';
+			
+			const savedScrollPos = sessionStorage.getItem('scrollPos');
+			if (savedScrollPos !== null) {
+				window.scrollTo(0, parseInt(savedScrollPos));
+				sessionStorage.removeItem('scrollPos');
+			}
+		});
+	</script>
+
     </body>
 </html>

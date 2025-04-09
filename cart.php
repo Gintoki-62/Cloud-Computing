@@ -2,68 +2,33 @@
 <html lang="en">
 
 <body>
-	<!-- JavaScript popup function (put in your HTML head or footer) -->
-	<script>
-	function showPopup(message) {
-		const popup = document.createElement('div');
-		popup.innerHTML = `
-			<div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center; z-index:1000;">
-				<div style="background:white; padding:25px; border-radius:10px; text-align:center;">
-					<div style="font-size:20px; margin-bottom:20px;">${message}</div>
-					<button onclick="this.parentElement.parentElement.remove()" style="padding:8px 16px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer;">
-						CLOSE
-					</button>
-				</div>
-			</div>
-		`;
-		document.body.appendChild(popup);
-	}
-	</script>
-
 	<?php
 		session_start();
 		include '.vscode/config.php';
 		include 'header.php';
 
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 			$prod_id = $_POST['prod_id'];
-			$prod_name = $_POST['prod_name'];
-			$prod_image = $_POST['prod_image'];
-			$prod_price = $_POST['prod_price'];
-			$quantity = $_POST['quantity'];
-
-			// First check if product already exists in cart
-			$check_stmt = $conn->prepare("SELECT quantity FROM cart WHERE prod_id = ?");
-			$check_stmt->bind_param("s", $prod_id);
-			$check_stmt->execute();
-			$result = $check_stmt->get_result();
-			
-			if ($result->num_rows > 0) {
-				// Product exists - update quantity
-				$row = $result->fetch_assoc();
-				$new_quantity = $row['quantity'] + $quantity;
-				
-				$update_stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE prod_id = ?");
-				$update_stmt->bind_param("is", $new_quantity, $prod_id);
-				
-				if ($update_stmt->execute()) {
-					echo "<script> showPopup('Successfully Added !');</script>";
-				} else {
-					echo "<script> showPopup('Failed to add product to cart');</script>";
-				}
-			} else {
-				// Product doesn't exist - insert new record
-				$insert_stmt = $conn->prepare("INSERT INTO cart (prod_id, prod_name, prod_image, prod_price, quantity) VALUES (?, ?, ?, ?, ?)");
-				$insert_stmt->bind_param("sssdi", $prod_id, $prod_name, $prod_image, $prod_price, $quantity);
-				
-				if ($insert_stmt->execute()) {
-					echo "<script> showPopup('Successfully Added !');</script>";
-				} else {
-					echo "<script> showPopup('Failed to add product to cart');</script>";
-				}
-			}
+			$quantity = (int)$_POST['quantity'];
+		
+			$stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE prod_id = ?");
+			$stmt->bind_param("is", $quantity, $prod_id);
+			$stmt->execute();
+			$stmt->close();
 		}
+
+		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+			$prod_id = $_POST['prod_id'];
+		
+			$stmt = $conn->prepare("DELETE FROM cart WHERE prod_id = ?");
+			$stmt->bind_param("s", $prod_id);
+			$stmt->execute();
+			$stmt->close();
+		}
+		
 	?>
+
+
 
 	<!-- breadcrumb-section -->
 	<div class="breadcrumb-section breadcrumb-bg">
@@ -89,8 +54,8 @@
 						<table class="cart-table">
 							<thead class="cart-table-head">
 								<tr class="table-head-row">
-									<th class="product-remove"></th>
-									<th class="product-image">Product Image</th>
+									<th class="product-remove">No.</th>
+									<th class="product-image">Product</th>
 									<th class="product-name">Name</th>
 									<th class="product-price">Price</th>
 									<th class="product-quantity">Quantity</th>
@@ -100,38 +65,60 @@
 								</tr>
 							</thead>
 
-				<?php $result = mysqli_query($conn, "SELECT * FROM cart"); ?>
-				<?php $counter = 1; ?>
-				<?php $grand_total = 0; ?>
-				<?php while ($row = mysqli_fetch_assoc($result)) { ?>
-					<?php $total_price = $row['quantity'] * $row['prod_price']; ?>
-					<?php $grand_total += $total_price; ?>
-					<?php $last_total = $grand_total+5.90; ?>
+				<?php $result = mysqli_query($conn, "SELECT * FROM cart");
+				$counter = 1; 
+				$grand_total = 0;
+				$sub_total = 0; 
+
+				if (mysqli_num_rows($result) == 0) {
+					echo "<tr><td colspan='8'><h5 style='color:#F28123;'>Your Shopping Cart is Empty!</h5> </td></tr>";
+				} else { 
+					while ($row = mysqli_fetch_assoc($result)) {
+						$total_price = $row['quantity'] * $row['prod_price'];
+						$sub_total += $total_price;
+				?>
 							<tbody>
 								<tr class="table-body-row">
 									<td><?php echo $counter++; ?>.</td>
 									<td class="product-image"><img src="assets/img/products/<?php echo $row['prod_image']; ?>" alt=""></td>
 									<td class="product-name"><?php echo $row['prod_name']; ?></td>
 									<td class="product-price">RM <?php echo $row['prod_price']; ?></td>
+
+									<form method="POST" action="cart.php" id="cart" onsubmit="saveScrollPosition()">
+									<input type="hidden" name="prod_id" value="<?= $row['prod_id'] ?>">
+
 									<td class="product-price">
-										<div class="quantity-control">
+										<div class="quantity-display">
+											<span class="quantity-text"><?= $row['quantity'] ?></span>
+										</div>
+										<div class="quantity-edit d-none">
 											<button type="button" class="qty-minus" data-id="<?= $row['prod_id'] ?>">-</button>
-											<input type="number" name="quantity[<?= $row['prod_id'] ?>]" 
-												value="<?= $row['quantity'] ?>" min="1" class="qty-input"
-												data-price="<?= $row['prod_price'] ?>">
+											<input type="number" name="quantity" 
+												value="<?= $row['quantity'] ?>" min="1" max="100"
+												class="qty-input" data-price="<?= $row['prod_price'] ?>">
 											<button type="button" class="qty-plus" data-id="<?= $row['prod_id'] ?>">+</button>
+											<br><span class="error-msg"></span>
 										</div>
 									</td>
 
-									<!-- <td class="product-quantity"><input type="number" placeholder="<?php echo $row['quantity']; ?>"></td> -->
-									
 									<td class="product-total">RM <?php echo number_format($total_price, 2); ?></td>
-									<td><button type="submit" name="update" class="update-btn" title="Edit">
-										<img src="assets/img/products/edit.png" /></button></td>
-									<td class="product-remove"><a href="#" title="Delete"><img src="assets/img/products/delete.png" /></a></td>
+
+									<td>
+										<button type="button" name="update" class="update-btn" data-id="<?= $row['prod_id'] ?>" title="Edit">
+										<img src="assets/img/products/edit.png" /></button>
+
+										<button type="submit" name="save" id="saveBtn" class="save-btn d-none" data-id="<?= $row['prod_id'] ?>" title="Save">
+										<img src="assets/img/products/yes.png" />
+										</button>
+										
+									</td>
+
+									<td class="product-remove"><button type="submit" name="delete" class="update-btn" title="Delete"><img src="assets/img/products/delete.png" /></button></td></form>
 								</tr>
 							</tbody>
-				<?php }?>
+				<?php }
+				$grand_total = $sub_total + 5.90;
+				}?>
 						</table>
 					</div>
 				</div>
@@ -144,15 +131,17 @@
 						
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
-									<td>RM  <?php echo number_format($grand_total, 2); ?></td>
+									<td>RM  <?php echo number_format($sub_total, 2); ?></td>
 								</tr>
+								<?php if ($sub_total > 0): ?>
 								<tr class="total-data">
 									<td><strong>Shipping: </strong></td>
-									<td>RM  5.90</td>
+									<td>RM 5.90</td>
 								</tr>
+								<?php endif; ?>
 								<tr class="total-data">
 									<td><strong>Grand Total: </strong></td>
-									<td>RM  <?php echo number_format($last_total, 2); ?></td>
+									<td>RM  <?php echo number_format($grand_total, 2); ?></td>
 								</tr>
 						
 						</table>
@@ -168,6 +157,104 @@
 	 <br/><br/><br/><br/><br/><br/><br/>
 
 	<?php include 'footer.php'; ?>
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Edit button click
+		document.addEventListener('click', function(e) {
+			if (e.target.closest('.update-btn')) {
+				const row = e.target.closest('tr');
+				row.querySelector('.quantity-display').classList.add('d-none');
+				row.querySelector('.quantity-edit').classList.remove('d-none');
+				row.querySelector('.update-btn').classList.add('d-none');
+				row.querySelector('.save-btn').classList.remove('d-none');
+			}
+		});
+
+		// Save button click
+		document.addEventListener('click', function(e) {
+			if (e.target.closest('.save-btn')) {
+				const row = e.target.closest('tr');
+				const prodId = e.target.dataset.id;
+				const input = row.querySelector('.qty-input');
+				const newQty = parseInt(input.value);
+				const price = parseFloat(input.dataset.price);
+				
+				// Update UI immediately
+				row.querySelector('.quantity-text').textContent = newQty;
+				row.querySelector('.product-total').textContent = 'RM ' + (price * newQty).toFixed(2);
+				
+				// Switch back to view mode
+				row.querySelector('.quantity-display').classList.remove('d-none');
+				row.querySelector('.quantity-edit').classList.add('d-none');
+				row.querySelector('.update-btn').classList.remove('d-none');
+				row.querySelector('.save-btn').classList.add('d-none');
+			}
+		});
+
+		// Plus/Minus buttons
+		document.addEventListener('click', function(e) {
+			const row = e.target.closest('tr');
+			if (!row) return;
+			
+			const input = row.querySelector('.qty-input');
+			if (!input) return;
+			
+			let qty = parseInt(input.value) || 0;
+			
+			if (e.target.classList.contains('qty-plus')) {
+				qty = Math.min(qty + 1, 100);
+				input.value = qty;
+				validateInput(input);
+			} 
+			else if (e.target.classList.contains('qty-minus')) {
+				qty = Math.max(qty - 1, 0);
+				input.value = qty;
+				validateInput(input);
+			}
+		});
+
+		// Handle manual input
+		document.addEventListener('input', function(e) {
+			if (e.target.classList.contains('qty-input')) {
+				validateInput(e.target);
+			}
+		});
+
+		// Validation function
+		function validateInput(input) {
+			const value = parseInt(input.value) || 0;
+			const plusButton = input.nextElementSibling.nextElementSibling; // Get the + button
+			let errorMsg = plusButton.nextElementSibling;
+			
+			// Create error message element if it doesn't exist
+			if (!errorMsg || !errorMsg.classList.contains('error-msg')) {
+				errorMsg = document.createElement('span');
+				errorMsg.style.color = 'red';
+				errorMsg.style.fontSize = '0.8em';
+				errorMsg.className = 'error-msg';
+				plusButton.parentNode.insertBefore(errorMsg, plusButton.nextSibling);
+			}
+			
+			// Validate and show message
+			if (value < 1) {
+				input.value = 1;
+				errorMsg.textContent = 'Minimum is 1';
+			} 
+			else if (value > 100) {
+				input.value = 100;
+				errorMsg.textContent = 'Maximum is 100';
+			} 
+			else {
+				errorMsg.textContent = '';
+			}
+		}
+
+		});
+
+</script>
+
+
 
 </body>
 </html>

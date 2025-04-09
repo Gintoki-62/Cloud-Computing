@@ -193,8 +193,8 @@ p:last-child {
   height: 8vmax;
   border-right: 4px solid #000;
   border-radius: 50%;
-  -webkit-animation: spinRight 800ms linear infinite;
-  animation: spinRight 800ms linear infinite;
+  -webkit-animation: spinRight 400ms linear infinite;
+  animation: spinRight 400ms linear infinite;
 }
 
 .circle:before {
@@ -207,8 +207,8 @@ p:last-child {
   left: calc(50% - 3vmax);
   border-left: 3px solid #F28123;
   border-radius: 100%;
-  -webkit-animation: spinLeft 800ms linear infinite;
-  animation: spinLeft 800ms linear infinite;
+  -webkit-animation: spinLeft 400ms linear infinite;
+  animation: spinLeft 400ms linear infinite;
 }
 
 .circle:after {
@@ -221,8 +221,8 @@ p:last-child {
   left: calc(50% - 3vmax);
   border-left: 3px solid #F28123;
   border-radius: 100%;
-  -webkit-animation: spinLeft 800ms linear infinite;
-  animation: spinLeft 800ms linear infinite;
+  -webkit-animation: spinLeft 400ms linear infinite;
+  animation: spinLeft 400ms linear infinite;
   width: 4vmax;
   height: 4vmax;
   top: calc(50% - 2vmax);
@@ -882,7 +882,12 @@ a.mobile-show {
 	pointer-events: none;
 }
 
-
+.error-msg {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 5px;
+  height: 15px; /* Prevents layout shift when message appears */
+}
 /* -----------------------------------------------------------------------------
 
 # Footer Styles
@@ -2077,6 +2082,7 @@ span.comment-date {
 .quantity-control {
     display: flex;
     align-items: center;
+    gap: 5px;
 }
 
 .qty-minus, .qty-plus {
@@ -2096,7 +2102,7 @@ span.comment-date {
     border: 1px solid #ddd;
 }
 
-.update-btn, .delete-btn {
+.save-btn, .delete-btn {
     padding: 5px 10px;
     margin: 0 5px;
     border: none;
@@ -2118,6 +2124,14 @@ span.comment-date {
   border: none;
 }
 
+.save-btn {
+  background: transparent;
+  border: none;
+}
+.save-btn:hover {
+  border: none;
+}
+
 .cart-table {
     width: 100%;
     border-collapse: collapse;
@@ -2130,6 +2144,11 @@ span.comment-date {
     border-bottom: 1px solid #ddd;
     border: none;
 }
+
+.d-none {
+  display: none;
+}
+
 
 /* -----------------------------------------------------------------------------
 

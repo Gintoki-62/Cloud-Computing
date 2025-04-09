@@ -47,7 +47,7 @@
                                         </a>
                                     </div>
                                     <h3><?php echo $row['prod_name']; ?></h3>
-                                    <p class="product-price"><span><?php echo $row['prod_price']; ?></span> 85$</p>
+                                    <p class="product-price"><span>Price</span>RM  <?php echo $row['prod_price']; ?></p>
                                     <a href="cart.html" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
                                 </div>
                             </div>
