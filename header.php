@@ -56,21 +56,30 @@
                                 </a>
                             </div>
                             <!-- logo -->
-        <?php
-        include '.vscode/config.php';
+                            <?php
+                                include '.vscode/config.php';
 
-        // Count distinct products in the cart
-        $result = mysqli_query($conn, "SELECT COUNT(DISTINCT prod_id) AS total_products FROM cart");
+                                // Get the logged-in user's ID
+                                $user_id = $_SESSION['user_id'] ?? null;
 
-        if ($result) {
-            $row = mysqli_fetch_assoc($result);
-            $cart_count = $row['total_products'] ?? 0;  // Default to 0 if no products in the cart
-        } else {
-            $cart_count = 0;  // If there's an error with the query, default to 0
-        }
-
-        echo $cart_count;  // Output the cart count (for testing purposes)
-        ?>
+                                if ($user_id) {
+                                    // Count distinct products for this specific user
+                                    $stmt = $conn->prepare("SELECT COUNT(DISTINCT prod_id) AS total_products FROM cart WHERE user_id = ?");
+                                    $stmt->bind_param("s", $user_id);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    
+                                    if ($result) {
+                                        $row = $result->fetch_assoc();
+                                        $cart_count = $row['total_products'] ?? 0;
+                                    } else {
+                                        $cart_count = 0;
+                                    }
+                                    $stmt->close();
+                                } else {
+                                    $cart_count = 0; // No user logged in
+                                }
+                                ?>
 
                             <!-- menu start -->
                             <nav class="main-menu">

@@ -21,6 +21,7 @@
     
 	<?php
 		session_start();
+		$_SESSION['user_id'] = 'q123'; 
 		include '.vscode/config.php';
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,35 +30,59 @@
 			$prod_image = $_POST['prod_image'];
 			$prod_price = $_POST['prod_price'];
 			$quantity = $_POST['quantity'];
+			$user_id = $_SESSION['user_id'] ?? null; // Get user_id from session
 
-			// First check if product already exists in cart
-			$check_stmt = $conn->prepare("SELECT quantity FROM cart WHERE prod_id = ?");
-			$check_stmt->bind_param("s", $prod_id);
-			$check_stmt->execute();
-			$result = $check_stmt->get_result();
-			
-			if ($result->num_rows > 0) {
-				// Product exists - update quantity
-				$row = $result->fetch_assoc();
-				$new_quantity = $row['quantity'] + $quantity;
-				
-				$update_stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE prod_id = ?");
-				$update_stmt->bind_param("is", $new_quantity, $prod_id);
-				
-				if ($update_stmt->execute()) {
-					echo "<script> showPopup('Successfully Added to Cart!');</script>";
-				} else {
-					echo "<script> showPopup('Failed to add product to cart');</script>";
-				}
+			if (!$user_id) {
+				echo "<script> showPopup('Please login first!');</script>";
 			} else {
-				// Product doesn't exist - insert new record
-				$insert_stmt = $conn->prepare("INSERT INTO cart (prod_id, prod_name, prod_image, prod_price, quantity) VALUES (?, ?, ?, ?, ?)");
-				$insert_stmt->bind_param("sssdi", $prod_id, $prod_name, $prod_image, $prod_price, $quantity);
-				
-				if ($insert_stmt->execute()) {
-					echo "<script> showPopup('Successfully added to Cart !');</script>";
+				// Get or create cart_id for this user
+				$cart_stmt = $conn->prepare("SELECT MAX(cart_id) FROM cart WHERE user_id = ?");
+				$cart_stmt->bind_param("s", $user_id);
+				$cart_stmt->execute();
+				$cart_result = $cart_stmt->get_result();
+				$cart_id = $cart_result->fetch_row()[0];
+
+				if (!$cart_id) {
+					// Create new cart by inserting first item
+					$insert_stmt = $conn->prepare("INSERT INTO cart (user_id, prod_id, prod_name, prod_image, prod_price, quantity) VALUES (?, ?, ?, ?, ?, ?)");
+					$insert_stmt->bind_param("ssssdi", $user_id, $prod_id, $prod_name, $prod_image, $prod_price, $quantity);
+					
+					if ($insert_stmt->execute()) {
+						echo "<script> showPopup('Successfully Added to Cart!');</script>";
+					} else {
+						echo "<script> showPopup('Failed to add to cart');</script>";
+					}
 				} else {
-					echo "<script> showPopup('Failed to add product to cart');</script>";
+					// Check if product already exists in this user's cart
+					$check_stmt = $conn->prepare("SELECT quantity FROM cart WHERE cart_id = ? AND prod_id = ?");
+					$check_stmt->bind_param("is", $cart_id, $prod_id);
+					$check_stmt->execute();
+					$result = $check_stmt->get_result();
+					
+					if ($result->num_rows > 0) {
+						// Product exists - update quantity
+						$row = $result->fetch_assoc();
+						$new_quantity = $row['quantity'] + $quantity;
+						
+						$update_stmt = $conn->prepare("UPDATE cart SET quantity = ? WHERE cart_id = ? AND prod_id = ?");
+						$update_stmt->bind_param("iis", $new_quantity, $cart_id, $prod_id);
+						
+						if ($update_stmt->execute()) {
+							echo "<script> showPopup('Successfully Added to Cart!');</script>";
+						} else {
+							echo "<script> showPopup('Failed to add to cart');</script>";
+						}
+					} else {
+						// Product doesn't exist - insert with existing cart_id
+						$insert_stmt = $conn->prepare("INSERT INTO cart (cart_id, user_id, prod_id, prod_name, prod_image, prod_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)");
+						$insert_stmt->bind_param("issssdi", $cart_id, $user_id, $prod_id, $prod_name, $prod_image, $prod_price, $quantity);
+						
+						if ($insert_stmt->execute()) {
+							echo "<script> showPopup('Successfully Added to Cart!');</script>";
+						} else {
+							echo "<script> showPopup('Failed to add to cart');</script>";
+						}
+					}
 				}
 			}
 		}
@@ -119,9 +144,9 @@
 									<i class="fas fa-shopping-cart"></i> Add to Cart
 								</button>
 							</form>
-
 					</div>
 				</div>
+				<br>
 				<?php }?>
 			</div>
 		</div>
@@ -129,8 +154,5 @@
 	<!-- end products -->
 
 	<?php include 'footer.php'; ?>
-	
-
-
 </body>
 </html>
