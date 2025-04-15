@@ -19,6 +19,15 @@ CREATE TABLE `product` (
   `prod_type` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 
 
@@ -71,3 +80,11 @@ INSERT INTO `product` (`prod_id`, `prod_name`, `prod_image`, `prod_price`, `prod
 ('25FLW018', 'Diploma/Degree Graduation Uniform (free size)', 'prod18.jpg', 200, 100, 'Uniform'),
 ('25FLW019', 'Graduation Hat', 'prod19.jpg', 24.9, 100, 'Uniform'),
 ('25FLW020', 'Graduation CipMunk', 'prod20.jpg', 19.9, 100, 'Bear');
+
+
+INSERT INTO `users` (`username`, `email`, `password`, `created_at`) VALUES
+('grad', 'graduate@gmail.com', 'password123', NOW()),
+('alex123', 'alex@gmail.com', 'alexpass456', NOW()),
+('siti_nur', 'siti@gmail.com', 'nurpass789', NOW()),
+('john_doe', 'john@gmail.com', 'johndoepass', NOW()),
+('amy89', 'amy@gmail.com', 'amysecurepwd', NOW());
