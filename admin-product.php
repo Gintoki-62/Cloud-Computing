@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             $detectedType = mime_content_type($_FILES['prod_image']['tmp_name']);
             
-            if (!in_array($detectedType, $allowedTypes)) {
+            if (!in_array($detectedType, haystack: $allowedTypes)) {
                 throw new Exception('Only JPG, PNG, and GIF files are allowed');
             }
 
