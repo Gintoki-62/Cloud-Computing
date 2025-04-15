@@ -90,6 +90,7 @@
                                     <li><a href="checkout.php">Check Out</a></li>
                                     <li><a href="news.php">News</a></li>
                                     <li><a href="contact.php">Contact</a></li>
+                                    <li><a href="login.php" class="login-btn"><i class="fas fa-user"></i> Login</a></li>
                                     <li>
                                         <div class="header-icons">
                                             <a class="shopping-cart cart-icon-wrapper" href="cart.php"><i class="fas fa-shopping-cart"></i>
