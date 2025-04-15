@@ -1,138 +1,99 @@
 <?php
-session_start();
-include '.vscode/config.php';
 include 'header.php';
+include '.vscode/config.php';
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
-    header('Location: login.php');
-    exit();
-}
-
-$addmessage = '';
-$addmessageClass = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-    try {
-        // Validate inputs
-        $prod_name = htmlspecialchars(trim($_POST['prod_name']));
-        $prod_description = htmlspecialchars(trim($_POST['prod_description']));
-        $prod_price = filter_input(INPUT_POST, 'prod_price', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $prod_quantity = filter_input(INPUT_POST, 'prod_quantity', FILTER_SANITIZE_NUMBER_INT);
-        $prod_type = htmlspecialchars(trim($_POST['prod_type']));
-        
-        // Handle file upload
-        $imagePath = '';
-        if (isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] === UPLOAD_ERR_OK) {
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            $detectedType = mime_content_type($_FILES['prod_image']['tmp_name']);
-            
-            if (!in_array($detectedType, haystack: $allowedTypes)) {
-                throw new Exception('Only JPG, PNG, and GIF files are allowed');
-            }
-
-            $uploadDir = 'uploads/products/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            $filename = uniqid() . '_' . basename($_FILES['prod_image']['name']);
-            $targetPath = $uploadDir . $filename;
-
-            if (!move_uploaded_file($_FILES['prod_image']['tmp_name'], $targetPath)) {
-                throw new Exception('Failed to upload image');
-            }
-            
-            $imagePath = $targetPath;
-        }
-
-        // Basic validation
-        $requiredFields = [
-            'Product Name' => $prod_name,
-            'Price' => $prod_price,
-            'Quantity' => $prod_quantity,
-            'Type' => $prod_type
-        ];
-
-        foreach ($requiredFields as $field => $value) {
-            if (empty($value)) {
-                throw new Exception("$field is a required field");
-            }
-        }
-
-        // Insert into database
-        $stmt = $pdo->prepare("INSERT INTO products 
-                            (name, description, price, quantity, type, image, created_at) 
-                            VALUES (:name, :description, :price, :quantity, :type, :image, NOW())");
-        
-        $stmt->execute([
-            ':name' => $prod_name,
-            ':description' => $prod_description,
-            ':price' => $prod_price,
-            ':quantity' => $prod_quantity,
-            ':type' => $prod_type,
-            ':image' => $imagePath
-        ]);
-
-        $addmessage = 'Product added successfully!';
-        $addmessageClass = 'success';
-        
-        // Clear form inputs
-        $_POST = array();
-
-    } catch (Exception $e) {
-        $addmessage = 'Error: ' . $e->getMessage();
-        $addmessageClass = 'error';
+$product = [];
+if($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET["prod_id"])) {
+    // Establish a db connection
+   $conn = mysqli_connect($host, $username, $password, $database);
+    if (!$conn) {
+        die("Connection Error:" . mysqli_connect_error());
     }
+
+    $prod_id = mysqli_real_escape_string($conn, trim($_GET["prod_id"]));
+    $sql = "SELECT * FROM product WHERE prod_id = '$prod_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $product = mysqli_fetch_assoc($result);
+    }
+    mysqli_close($conn);
 }
 ?>
 
-<!-- HTML Form -->
-<div class="container">
-    <h2>Add New Product</h2>
-    
-    <?php if ($addmessage): ?>
-        <div class="<?= $addmessageClass ?>"><?= $addmessage ?></div>
-    <?php endif; ?>
-
-    <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label>Product Name:</label>
-            <input type="text" name="prod_name" required value="<?= $_POST['prod_name'] ?? '' ?>">
+<!-- breadcrumb-section -->
+<div class="breadcrumb-section breadcrumb-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div class="breadcrumb-text">
+                    <p>Admin Panel</p>
+                    <h1>Product Details</h1>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label>Description:</label>
-            <textarea name="prod_description"><?= $_POST['prod_description'] ?? '' ?></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Price:</label>
-            <input type="number" step="0.01" name="prod_price" required value="<?= $_POST['prod_price'] ?? '' ?>">
-        </div>
-
-        <div class="form-group">
-            <label>Quantity:</label>
-            <input type="number" name="prod_quantity" required value="<?= $_POST['prod_quantity'] ?? '' ?>">
-        </div>
-
-        <div class="form-group">
-            <label>Product Type:</label>
-            <select name="prod_type" required>
-                <option value="">Select Type</option>
-                <option value="Electronics" <?= ($_POST['prod_type'] ?? '') === 'Electronics' ? 'selected' : '' ?>>Electronics</option>
-                <option value="Clothing" <?= ($_POST['prod_type'] ?? '') === 'Clothing' ? 'selected' : '' ?>>Clothing</option>
-                <option value="Books" <?= ($_POST['prod_type'] ?? '') === 'Books' ? 'selected' : '' ?>>Books</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Product Image:</label>
-            <input type="file" name="prod_image" accept="image/*">
-        </div>
-
-        <button type="submit" name="submit">Add Product</button>
-    </form>
+    </div>
 </div>
+<!-- end breadcrumb section -->
+
+<!-- product details section -->
+<div class="mt-150 mb-150">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="order-details-wrap">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>PRODUCT DETAILS</h3>
+                        <a href="add-product.php" class="boxed-btn">Add New Product</a>
+                    </div>
+                    
+                    <?php if (!empty($product)) : ?>
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Product Name</th>
+                                <th>Image</th>
+                                <th>Type</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Stock</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><?php htmlspecialchars($product['prod_id']) ?></td>
+                                <td><?php htmlspecialchars($product['prod_name']) ?></td>
+                                <td>
+                                    <?php if (!empty($product['prod_image'])) : ?>
+                                    <img src="assets/img<?php htmlspecialchars($product['prod_image']) ?>" 
+                                         alt="<?php htmlspecialchars($product['prod_name']) ?>" 
+                                         style="max-width: 80px; height: auto;">
+                                    <?php else : ?>
+                                        No Image
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= htmlspecialchars($product['prod_type']) ?></td>
+                                <td class="text-right">$<?php number_format($product['proprice'], 2) ?></td>
+                                <td class="text-right"><?php $product['quantity'] ?></td>
+                                <td class="text-right">
+                                    <a href="edit-product.php?id=<?php $product['prod_id'] ?>" 
+                                       class="btn btn-sm btn-primary">Edit</a>
+                                    <a href="delete-product.php?id=<?php $product['prod_id'] ?>" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <?php else : ?>
+                        <div class="alert alert-warning text-center">No product found.</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end product details section -->
 
 <?php include 'footer.php'; ?>
