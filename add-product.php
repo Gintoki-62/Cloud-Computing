@@ -13,26 +13,38 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // Sanitize input data
+    $prod_id = mysqli_real_escape_string($conn, trim($_POST['prod_id']));
     $prod_name = mysqli_real_escape_string($conn, trim($_POST['prod_name']));
     $prod_type = mysqli_real_escape_string($conn, trim($_POST['prod_type']));
     $prod_price = floatval($_POST['prod_price']);
     $prod_quantity = intval($_POST['prod_quantity']);
     $prod_image = '';
 
+    // Validate Product ID
+    if (empty($prod_id)) {
+        $error = "Product ID is required.";
+    } else {
+        // Check if Product ID is unique
+        $check_sql = "SELECT prod_id FROM product WHERE prod_id = '$prod_id'";
+        $result = mysqli_query($conn, $check_sql);
+        if (mysqli_num_rows($result) > 0) {
+            $error = "Product ID must be unique. This ID already exists.";
+        }
+    }
+
     // Handle image upload
-    if (isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] == UPLOAD_ERR_OK) {
+    if (empty($error) && isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] == UPLOAD_ERR_OK) {
         $target_dir = "assets/img/";
         $file_extension = pathinfo($_FILES['prod_image']['name'], PATHINFO_EXTENSION);
         $filename = uniqid() . '.' . $file_extension;
         $target_file = $target_dir . $filename;
 
-        // Validate image file
         $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
         if (in_array(strtolower($file_extension), $allowed_types)) {
-            if (move_uploaded_file($_FILES['prod_image']['tmp_name'], $target_file)) {
-                $prod_image = $target_file;
-            } else {
+            if (!move_uploaded_file($_FILES['prod_image']['tmp_name'], $target_file)) {
                 $error = "Error uploading image file.";
+            } else {
+                $prod_image = $target_file;
             }
         } else {
             $error = "Invalid file type. Only JPG, JPEG, PNG & GIF allowed.";
@@ -41,13 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if (empty($error)) {
         // Insert product into database
-        $sql = "INSERT INTO product (prod_name, prod_type, prod_price, prod_quantity, prod_image)
-                VALUES ('$prod_name', '$prod_type', $prod_price, $prod_quantity, '$prod_image')";
+        $sql = "INSERT INTO product (prod_id, prod_name, prod_type, prod_price, prod_quantity, prod_image)
+                VALUES ('$prod_id', '$prod_name', '$prod_type', $prod_price, $prod_quantity, '$prod_image')";
 
         if (mysqli_query($conn, $sql)) {
             $success = "Product added successfully!";
             // Clear form fields
-            $prod_name = $prod_type = $prod_price = $prod_quantity = '';
+            $prod_id = $prod_name = $prod_type = $prod_price = $prod_quantity = '';
         } else {
             $error = "Error: " . mysqli_error($conn);
         }
@@ -89,6 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <form method="POST" enctype="multipart/form-data">
                         <div class="form-group">
+                            <label>Product ID</label>
+                            <input type="text" name="prod_id" class="form-control" required 
+                                   value="<?php echo isset($prod_id) ? $prod_id : '' ?>">
+                        </div>
+                        <div class="form-group">
                             <label>Product Name</label>
                             <input type="text" name="prod_name" class="form-control" required 
                                    value="<?php echo isset($prod_name) ? $prod_name : '' ?>">
@@ -96,12 +113,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                         <div class="form-group">
                             <label>Product Type</label>
-                            <input type="text" name="prod_type" class="form-control" required
-                                   value="<?php echo isset($prod_type) ? $prod_type : '' ?>">
+                            <select name="prod_type" class="form-control" required>
+                                <option value="">Select Product Type</option>
+                                <option value="Fruit" <?php echo (isset($prod_type) && $prod_type == 'Fruit') ? 'selected' : ''; ?>>Fruit</option>
+                                <option value="Vegetable" <?php echo (isset($prod_type) && $prod_type == 'Vegetable') ? 'selected' : ''; ?>>Vegetable</option>
+                                <option value="Dairy" <?php echo (isset($prod_type) && $prod_type == 'Dairy') ? 'selected' : ''; ?>>Dairy</option>
+                                <option value="Bakery" <?php echo (isset($prod_type) && $prod_type == 'Bakery') ? 'selected' : ''; ?>>Bakery</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
-                            <label>Price</label>
+                            <label>Price (RM)</label>
                             <input type="number" step="0.01" name="prod_price" class="form-control" required
                                    value="<?php echo isset($prod_price) ? $prod_price : '' ?>">
                         </div>
@@ -119,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                         <div class="form-group text-right">
                             <button type="submit" class="btn btn-primary">Add Product</button>
-                            <a href="products.php" class="btn btn-outline-secondary">Cancel</a>
+                            <a href="admin-product.php" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
