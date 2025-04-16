@@ -74,8 +74,8 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET["prod_id"])) {
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($product['prod_type']) ?></td>
-                                <td class="text-right">$<?php number_format($product['proprice'], 2) ?></td>
-                                <td class="text-right"><?php $product['quantity'] ?></td>
+                                <td class="text-right">$<?php number_format($product['prod_price'], 2) ?></td>
+                                <td class="text-right"><?php $product['prod_quantity'] ?></td>
                                 <td class="text-right">
                                     <a href="edit-product.php?id=<?php $product['prod_id'] ?>" 
                                        class="btn btn-sm btn-primary">Edit</a>
