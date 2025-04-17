@@ -1,11 +1,11 @@
 <?php
 include 'header.php';
-include '.vscode/config.php';
+include '.vscode/config.php'; 
 
 $product = [];
 if($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET["prod_id"])) {
     // Establish a db connection
-   $conn = mysqli_connect($host, $username, $password, $database);
+    $conn = mysqli_connect($host, $username, $password, $database);
     if (!$conn) {
         die("Connection Error:" . mysqli_connect_error());
     }
@@ -62,24 +62,24 @@ if($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET["prod_id"])) {
                         </thead>
                         <tbody>
                             <tr>
-                                <td><?php htmlspecialchars($product['prod_id']) ?></td>
-                                <td><?php htmlspecialchars($product['prod_name']) ?></td>
+                                <td><?= htmlspecialchars($product['prod_id']) ?></td>
+                                <td><?= htmlspecialchars($product['prod_name']) ?></td>
                                 <td>
                                     <?php if (!empty($product['prod_image'])) : ?>
-                                    <img src="assets/img<?php htmlspecialchars($product['prod_image']) ?>" 
-                                         alt="<?php htmlspecialchars($product['prod_name']) ?>" 
+                                    <img src="assets/img/<?= htmlspecialchars($product['prod_image']) ?>" 
+                                         alt="<?= htmlspecialchars($product['prod_name']) ?>" 
                                          style="max-width: 80px; height: auto;">
                                     <?php else : ?>
                                         No Image
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($product['prod_type']) ?></td>
-                                <td class="text-right">$<?php number_format($product['prod_price'], 2) ?></td>
-                                <td class="text-right"><?php $product['prod_quantity'] ?></td>
+                                <td class="text-right">$<?= number_format($product['prod_price'], 2) ?></td>
+                                <td class="text-right"><?= $product['prod_quantity'] ?></td>
                                 <td class="text-right">
-                                    <a href="edit-product.php?id=<?php $product['prod_id'] ?>" 
+                                    <a href="edit-product.php?id=<?= $product['prod_id'] ?>" 
                                        class="btn btn-sm btn-primary">Edit</a>
-                                    <a href="delete-product.php?id=<?php $product['prod_id'] ?>" 
+                                    <a href="delete-product.php?id=<?= $product['prod_id'] ?>" 
                                        class="btn btn-sm btn-danger"
                                        onclick="return confirm('Are you sure?')">Delete</a>
                                 </td>
