@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // Product type validation
-    $allowed_types = ['Fruit', 'Vegetable', 'Dairy', 'Bakery'];
+    $allowed_types = ['Bear', 'Bouquet', 'Uniform'];
     if (empty($error) && !in_array($prod_type, $allowed_types)) {
         $error = "Please select a valid product type.";
     }
@@ -164,7 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <form method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>Product ID</label>
-                            <input type="text" name="prod_id" class="form-control" 
+                            <input type="text" name="prod_id" class="form-control"
+                                   placeholder="e.g. BQ1001" 
                                    pattern="[A-Za-z0-9]{1,8}" 
                                    title="1-8 alphanumeric characters"
                                    value="<?= htmlspecialchars($prod_id) ?>" required>
@@ -181,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                             <label>Product Type</label>
                             <select name="prod_type" class="form-control" required>
                                 <option value="">Select Type</option>
-                                <?php foreach (['Fruit', 'Vegetable', 'Dairy', 'Bakery'] as $type): ?>
+                                <?php foreach (['Bear', 'Bouquet', 'Uniform'] as $type): ?>
                                 <option value="<?= $type ?>" 
                                     <?= ($prod_type === $type) ? 'selected' : '' ?>>
                                     <?= $type ?>
