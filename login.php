@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php';  
+include '.vscode/config.php'; 
 
 $error_message = "";  
 

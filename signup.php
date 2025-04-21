@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include '.vscode/config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
