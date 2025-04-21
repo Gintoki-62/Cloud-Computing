@@ -1,3 +1,6 @@
+<?php
+include 'config.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,7 +129,7 @@
 							<a href="single-product.php"><img src="assets/img/products/prod1.jpg" alt="Bouquet"></a>
 						</div>
 						<h3>Graduation Bouquet</h3>
-						<p class="product-price"><span>Per Piece</span> $45</p>
+						<p class="product-price"><span>Per Piece</span> $50</p>
 						<a href="cart.php" class="cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
 					</div>
 				</div>

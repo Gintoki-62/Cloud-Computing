@@ -1,3 +1,42 @@
+<?php
+session_start();
+include '.vscode/config.php'; 
+
+$error_message = "";  
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    if (empty($username) || empty($password)) {
+        $error_message = "Please fill in both fields.";
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+
+                header("Location: homepage.php");
+                exit();
+            } else {
+                $error_message = "Invalid password.";
+            }
+        } else {
+            $error_message = "No user found with that username.";
+        }
+    }
+}
+
+$conn->close(); 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
