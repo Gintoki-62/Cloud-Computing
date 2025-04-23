@@ -238,7 +238,7 @@ $result = $con->query($sql);
                                         <?php while ($row = $result->fetch_object()) : 
                                             // Get just the filename without any path
                                             $imageFile = basename($row->prod_image);
-                                            $imagePath = "assets/img/" . $imageFile;
+                                            $imagePath = "assets/img/products/" . $imageFile;
                                             $fullImagePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $imagePath;
                                             
                                             // Determine stock status class
