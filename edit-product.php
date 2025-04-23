@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['btn_update'])) {
     $image_path = $product->prod_image; // Default to existing image
     
     if (isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] == UPLOAD_ERR_OK) {
-        $target_dir = "assets/img/";
+        $target_dir = "assets/img/products/";
         $imageFile = basename($_FILES["prod_image"]["name"]);
         $target_file = $target_dir . $imageFile;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));

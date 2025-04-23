@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Handle file upload
     if (isset($_FILES['prod_image']) && $_FILES['prod_image']['error'] == UPLOAD_ERR_OK) {
-        $target_dir = "assets/img/";
+        $target_dir = "assets/img/products/";
         $imageFileType = strtolower(pathinfo($_FILES["prod_image"]["name"], PATHINFO_EXTENSION));
         $new_filename = uniqid() . '.' . $imageFileType;
         $target_file = $target_dir . $new_filename;
