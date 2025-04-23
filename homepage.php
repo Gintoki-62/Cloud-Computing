@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include '.vscode/config.php'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
