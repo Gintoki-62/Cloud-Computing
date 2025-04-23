@@ -33,7 +33,7 @@ $product = $result->fetch_object();
 
 // Get just the filename without any path
 $imageFile = basename($product->prod_image);
-$imagePath = "assets/img/products" . $imageFile;
+$imagePath = "assets/img/products/" . $imageFile;
 $fullImagePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $imagePath;
 
 // Determine stock status class
