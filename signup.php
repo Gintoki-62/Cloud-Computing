@@ -3,6 +3,7 @@ include '.vscode/config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username']);
+    $gender = trim($_POST['gender']);
     $email = trim($_POST['email']);
     $phone = trim($_POST['phone']);
     $address = trim($_POST['address']);
@@ -14,13 +15,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO users (username, email, phone, address, password) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (username, gender, email, phone, address, password) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
 
         if ($stmt === false) {
             $error_message = "Prepare failed: " . $conn->error;
         } else {
-            $stmt->bind_param("sssss", $username, $email, $phone, $address, $hashed_password);
+            $stmt->bind_param("ssssss", $username, $gender, $email, $phone, $address, $hashed_password);
 
             if ($stmt->execute()) {
                 header("Location: login.php");
@@ -37,7 +38,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<?php include 'header.php'; ?>
+<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+
+	<!-- title -->
+	<title>GrandStore</title>
+
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="assets/img/logo.png">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+	<link rel="stylesheet" href="assets/css/all.min.css">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="assets/css/owl.carousel.css">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="assets/css/magnific-popup.css">
+	<!-- animate css -->
+	<link rel="stylesheet" href="assets/css/animate.css">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="assets/css/meanmenu.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="assets/css/main.css">
+	<!-- responsive -->
+	<link rel="stylesheet" href="assets/css/responsive.css">
+
     <style>
         .signup-wrapper {
             display: flex;
@@ -86,10 +116,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-<body>
+<body style="background-image: url('./assets/img/grand.jpg');background-repeat: no-repeat;background-size: cover;background-position: center;">
 
 <!-- breadcrumb -->
-<div class="breadcrumb-section breadcrumb-bg">
+<!-- <div class="breadcrumb-section breadcrumb-bg">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2 text-center">
@@ -100,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- signup section -->
 <div class="signup-section mt-150 mb-150">
@@ -112,6 +142,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <form action="signup.php" method="POST">
                     <div class="form-group mb-3">
                         <input type="text" name="username" placeholder="Username" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        Gender : &nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="gender" value="M" <?php if(isset($gender) && $gender == 'M') echo "checked"; ?>> Male &nbsp;&nbsp;
+                        <input type="radio" name="gender" value="F" <?php if(isset($gender) && $gender == 'F') echo "checked"; ?>> Female<br>
                     </div>
                     <div class="form-group mb-3">
                         <input type="email" name="email" placeholder="Email" class="form-control" required>
@@ -137,6 +172,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
 </body>
 </html>

@@ -36,8 +36,8 @@
 	</script>
     
 	<?php
-		session_start();
 		include '.vscode/config.php';
+        include 'headerr.php';
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$prod_id = $_POST['prod_id'];
@@ -78,7 +78,7 @@
 			}
 		}
 		
-		include 'header.php';
+		
 	?>
 
 <!-- Display Search Results -->
@@ -89,7 +89,7 @@
                     <div class="row">
                         <div class="col-lg-8 offset-lg-2 text-center">
                             <div class="breadcrumb-text">
-                            <p>Search Result for : <em> <?php echo htmlspecialchars($_GET['keyword']); ?></em></p>
+                            <h1>Search Result for : <em> <?php echo htmlspecialchars($_GET['keyword']); ?></em></h1>
                             </div>
                         </div>
                     </div>

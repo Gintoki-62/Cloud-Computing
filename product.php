@@ -20,10 +20,11 @@
 	</script>
     
 	<?php
-		session_start();
-		$_SESSION['user_id'] = 'q123'; 
+	ob_start();
 		include '.vscode/config.php';
+		include 'headerr.php'; 
 
+		$user_id = $_SESSION['user_id'] ?? null;
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$prod_id = $_POST['prod_id'];
 			$prod_name = $_POST['prod_name'];
@@ -33,8 +34,11 @@
 			$user_id = $_SESSION['user_id'] ?? null; // Get user_id from session
 
 			if (!$user_id) {
-				echo "<script> showPopup('Please login first!');</script>";
+				header("Location: login.php");
+    			exit();
+
 			} else {
+				
 				// Get or create cart_id for this user
 				$cart_stmt = $conn->prepare("SELECT MAX(cart_id) FROM cart WHERE user_id = ?");
 				$cart_stmt->bind_param("s", $user_id);
@@ -86,12 +90,13 @@
 				}
 			}
 		}
+		ob_end_flush();
 		
-		include 'header.php';
 	?>
 	
 	<!-- breadcrumb-section -->
-	<div class="breadcrumb-section breadcrumb-bg">
+	<div class="breadcrumb-section breadcrumb-bg" >
+		<!-- <img src="assets/img/grand6.png" width="100%" height="700px"> -->
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 offset-lg-2 text-center">
@@ -125,9 +130,10 @@
 				<?php include '.vscode/config.php'; ?>
 				<?php $result = mysqli_query($conn, "SELECT * FROM product"); ?>
 				<?php while ($row = mysqli_fetch_assoc($result)) { ?>
-					
+			
 				<div class="col-lg-4 col-md-6 text-center <?php echo $row['prod_type']; ?>">
 					<div class="single-product-item">
+						
 						<div class="product-image">
 							<img src="assets/img/products/<?php echo $row['prod_image']; ?>" alt="">
 						</div>

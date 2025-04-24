@@ -5,31 +5,31 @@ include '.vscode/config.php';
 $error_message = "";  
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $admin_name = $_POST['admin_name'];
+    $admin_password = $_POST['admin_password'];
 
-    if (empty($username) || empty($password)) {
+    if (empty($admin_name) || empty($admin_password)) {
         $error_message = "Please fill in both fields.";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
+        $stmt = $conn->prepare("SELECT * FROM admins WHERE admin_name = ?");
+        $stmt->bind_param("s", $admin_name);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
+            $admin = $result->fetch_assoc();
             
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['username'] = $user['username'];
+            if (password_verify($admin_password, $admin['admin_password'])) {
+                $_SESSION['admin_id'] = $admin['admin_id'];
+                $_SESSION['admin_name'] = $admin['admin_name'];
 
-                header("Location: homepage.php");
+                header("Location: admin-product.php");
                 exit();
             } else {
                 $error_message = "Invalid password.";
             }
         } else {
-            $error_message = "No user found with that username.";
+            $error_message = "No admin found with that admin name.";
         }
     }
 }
@@ -111,7 +111,6 @@ $conn->close();
 		}
 		.login-card p {
 			text-align: center;
-			font-size: 18px;
 			margin-top: 20px;
 		}
 		.login-card p a {
@@ -127,19 +126,19 @@ $conn->close();
 	<div class="container">
 		<div class="login-wrapper">
 			<div class="login-card">
-				<h3>Login to Your Account</h3>
+				<h3>Manager Account</h3>
 				<?php if (isset($error_message)) { echo "<p style='color: red; text-align:center;'>$error_message</p>"; } ?>
-				<form action="login.php" method="POST">
+				<form action="adminLogin.php" method="POST">
 					<div class="form-group mb-3">
-						<input type="text" name="username" placeholder="Username" class="form-control" required>
+						<input type="text" name="admin_name" placeholder="Username" class="form-control" required>
 					</div>
 					<div class="form-group mb-4">
-						<input type="password" name="password" placeholder="Password" class="form-control" required>
+						<input type="password" name="admin_password" placeholder="Password" class="form-control" required>
 					</div>
 					<button type="submit">Login</button>
 				</form>
-				<p>Don't have an account? <a href="signup.php">Sign Up</a></p>
-				<div style="text-align: center; font-size: 13px;text-decoration: underline"><a href="adminLogin.php">Manager Login here</a></div>
+                <br/>
+                <div style="text-align: center; font-size: 13px;text-decoration: underline"><a href="login.php">Back</a></div>
 			</div>
 		</div>
 	</div>

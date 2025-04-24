@@ -5,44 +5,39 @@
 	<div class="footer-area">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box about-widget">
-						<h2 class="widget-title">About us</h2>
-						<p>We are a one-stop shop for all your graduation needs, offering high-quality gowns, caps, sashes, and more to help you celebrate your special day. Our mission is to provide students and graduates with premium products, fast delivery, and exceptional customer service. Let us be a part of your success story!</p>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box get-in-touch">
-						<h2 class="widget-title">Get in Touch</h2>
-						<ul>
-							<li>GradStore, 123 Graduation Avenue,Penang, Malaysia</li>
-							<li>support@graduationstore.com</li>
-							<li>+00 111 222 3333</li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box pages">
-						<h2 class="widget-title">Pages</h2>
-						<ul>
-							<li><a href="homepage.php">Home</a></li>
-							<li><a href="about.php">About</a></li>
-							<li><a href="product.php">Product</a></li>
-							<li><a href="news.php">News</a></li>
-							<li><a href="contact.php">Contact</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<div class="footer-box subscribe">
-						<h2 class="widget-title">Subscribe</h2>
-						<p>Subscribe to our mailing list to get the latest updates.</p>
-						<form action="homepage.html">
-							<input type="email" placeholder="Email">
-							<button type="submit"><i class="fas fa-paper-plane"></i></button>
-						</form>
-					</div>
-				</div>
+				<table style="width: 100%;">
+					<tr>
+						<td style="width:20%; text-align: left; padding-right: 50px">
+							<img src="assets/img/logo.png"  width="200px" height="100px"/>
+						</td>
+						<td style="width:20%">
+							<div class="footer-box pages">
+							<h2 class="widget-title">Pages</h2>
+							<ul>
+								<li><a href="homepage.php">Home</a></li>
+								<li><a href="product.php">Product</a></li>
+								<li><a href="news.php">Check Out</a></li>
+							</ul>
+							</div>
+						</td>
+						<td style="width:30%">
+							<div class="footer-box get-in-touch">
+							<div class="contact-form-box">
+								<h2 class="widget-title"><i class="far fa-clock"></i> Shop Hours</h2>
+								<p>MONDAY - FRIDAY: <br/>8.00 to 9.00 PM <br><br/> SATURDAY - SUNDAY: <br/>10.00 to 8.00 PM </p>
+							</div>
+						</div>
+						<td>
+							<div class="footer-box get-in-touch">
+							<div class="contact-form-box">
+								<h2 class="widget-title"><i class="fas fa-address-book"></i> Contact</h2>
+								<p>Phone: +60 111 222 3333 <br> Email: grandstore888@gmail.com</p>
+							</div>
+							</div>
+						</td>
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 	</div>
@@ -53,7 +48,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6 col-md-12">
-					<p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>,  All Rights Reserved.</p>
+					<p>Copyrights &copy; 2025 - <a href="https://imransdesign.com/">GRANDSTORE</a>,  All Rights Reserved.</p>
 				</div>
 				<div class="col-lg-6 text-right col-md-12">
 					<div class="social-icons">
@@ -61,8 +56,6 @@
 							<li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
 							<li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
 							<li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-							<li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
 						</ul>
 					</div>
 				</div>

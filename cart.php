@@ -1,13 +1,13 @@
 <?php
-	session_start();
 	include '.vscode/config.php';
-	include 'header.php';
+	include 'headerr.php';
 
 	// Get the logged-in user's ID
-	$user_id = $_SESSION['user_id'] ?? null;
+	$user_id = $_SESSION['user_id'];
 
 	if (!$user_id) {
-		echo "<script> showPopup('Please login first!');</script>";
+		header("Location: login.php");
+    	exit();
 	}
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {

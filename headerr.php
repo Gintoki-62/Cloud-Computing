@@ -11,7 +11,7 @@
 	<title>GrandStore</title>
 
 	<!-- favicon -->
-	<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png">
+	<link rel="shortcut icon" type="image/png" href="assets/img/logo.png">
 	<!-- google font -->
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
@@ -34,12 +34,39 @@
 
     </head>
 
+    <?php
+    include '.vscode/config.php'; 
+    session_start(); 
+
+        $userPhoto = 'default.jpg'; // Default photo
+        $folder = "./assets/img/" . $userPhoto;
+
+        $user_id = $_SESSION['user_id'] ?? null;
+        
+        if (isset($_SESSION['user_id'])) {
+            // $user_id = $_SESSION['user_id'];
+            // $user_id='7';
+            $query = "SELECT photo FROM users WHERE user_id = '$user_id'";
+            $result = mysqli_query($conn, $query);
+        
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+        
+                if (!empty($row['photo'])) {
+                    $userPhoto = $row['photo'];
+                    $folder = "./assets/img/" . $userPhoto;
+                }
+            }
+        }
+    
+    ?>
+
     <!--PreLoader-->
-    <!--<div class="loader">
+    <!-- <div class="loader">
         <div class="loader-inner">
             <div class="circle"></div>
         </div>
-    </div>-->
+    </div> -->
     <!-- PreLoader Ends -->
     
 	<header>
@@ -57,8 +84,8 @@
                             </div>
                             <!-- logo -->
                             <?php
-                                include '.vscode/config.php';
-
+                                include '.vscode/config.php';       
+                                
                                 // Get the logged-in user's ID
                                 $user_id = $_SESSION['user_id'] ?? null;
 
@@ -85,17 +112,40 @@
                             <nav class="main-menu">
                                 <ul>
                                     <li class="current-list-item"><a href="homepage.php">Home</a></li>
-                                    <li><a href="about.php">About</a></li>
                                     <li><a href="product.php">Product</a></li>
                                     <li><a href="checkout.php">Check Out</a></li>
-                                    <li><a href="news.php">News</a></li>
-                                    <li><a href="contact.php">Contact</a></li>
-                                    <li><a href="login.php" class="login-btn"><i class="fas fa-user"></i> Login</a></li>
                                     <li>
                                         <div class="header-icons">
+                                            <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
                                             <a class="shopping-cart cart-icon-wrapper" href="cart.php"><i class="fas fa-shopping-cart"></i>
                                             <span id="cart-count" class="cart-count-badge"><?php echo $cart_count; ?></span></a>
-                                            <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a href="userPorfile.php">
+                                            <img src="<?php echo "$folder"; ?>" title="Profile" style="width: 50px; 
+                                                                                                            height: 50px;
+                                                                                                            border-radius: 30px;
+                                                                                                            padding: 0px;"/>
+                                            
+                                            </a>
+                                            <!-- <a href="login.php" class="login-btn"><i class="fas fa-user"></i> Login</a>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a href="logout.php" class="login-btn"><i class="fas fa-user"></i> LogOut</a> -->
+<?php
+if (isset($_SESSION['user_id'])) {
+    // User is logged in: show Logout icon
+    echo '
+    <a href="logout.php" class="login-btn">
+        <i class="fas fa-user"></i> LogOut
+    </a>';
+} else {
+    // User not logged in: show Login icon
+    echo '
+    <a href="login.php" class="login-btn">
+        <i class="fas fa-user"></i> Login
+    </a>';
+}
+?>
+
                                         </div>
                                     </li>
                                 </ul>
@@ -109,6 +159,10 @@
             </div>
         </div>
         <!-- end header -->
+
+        
+
+
         
     <!-- Search Area -->
     <div class="search-area">
