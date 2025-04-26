@@ -1,5 +1,5 @@
 <?php
-include 'header.php';
+include 'headerr.php';
 include '.vscode/config.php';
 
 // Establish database connection
@@ -211,15 +211,6 @@ if ($product->prod_quantity > 20) {
                                         </div>
                                     </div>
                                     
-                                    <div class="mb-4">
-                                        <div class="detail-label">Description</div>
-                                        <div class="detail-value">
-                                            <?= !empty($product->prod_description) ? 
-                                                nl2br(htmlspecialchars($product->prod_description)) : 
-                                                '<span class="text-muted">No description provided</span>' ?>
-                                        </div>
-                                    </div>
-                                    
                                     <div class="row mb-4">
                                         <div class="col-sm-6">
                                             <div class="detail-label">Price</div>
@@ -231,25 +222,6 @@ if ($product->prod_quantity > 20) {
                                                 <span class="stock-status <?= $stockClass ?>">
                                                     <?= $stockText ?>
                                                 </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row mb-4">
-                                        <div class="col-sm-6">
-                                            <div class="detail-label">Date Added</div>
-                                            <div class="detail-value">
-                                                <?= !empty($product->date_added) ? 
-                                                    date('F j, Y', strtotime($product->date_added)) : 
-                                                    'N/A' ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="detail-label">Last Updated</div>
-                                            <div class="detail-value">
-                                                <?= !empty($product->last_updated) ? 
-                                                    date('F j, Y', strtotime($product->last_updated)) : 
-                                                    'N/A' ?>
                                             </div>
                                         </div>
                                     </div>

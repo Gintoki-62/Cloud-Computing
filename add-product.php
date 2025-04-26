@@ -10,7 +10,7 @@ if ($con->connect_error) {
 }
 
 // Initialize variables
-$prod_id = $prod_name = $prod_type = $prod_price = $prod_quantity = $prod_description = '';
+$prod_id = $prod_name = $prod_type = $prod_price = $prod_quantity = '';
 $prod_image = '';
 $errors = array();
 $success = '';
@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $prod_type = trim($_POST['prod_type']);
     $prod_price = trim($_POST['prod_price']);
     $prod_quantity = trim($_POST['prod_quantity']);
-    $prod_description = trim($_POST['prod_description']);
     
     // Basic validation
     if (empty($prod_id)) $errors[] = "Product ID is required";
@@ -81,15 +80,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // If no errors, insert into database
     if (empty($errors)) {
-        $insert_sql = "INSERT INTO product (prod_id, prod_name, prod_image, prod_type, prod_price, prod_quantity, prod_description) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $insert_sql = "INSERT INTO product (prod_id, prod_name, prod_image, prod_type, prod_price, prod_quantity) 
+                      VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $con->prepare($insert_sql);
-        $stmt->bind_param("ssssdis", $prod_id, $prod_name, $prod_image, $prod_type, $prod_price, $prod_quantity, $prod_description);
+        $stmt->bind_param("ssssdi", $prod_id, $prod_name, $prod_image, $prod_type, $prod_price, $prod_quantity);
         
         if ($stmt->execute()) {
             $success = "Product added successfully!";
             // Clear form
-            $prod_id = $prod_name = $prod_type = $prod_price = $prod_quantity = $prod_description = '';
+            $prod_id = $prod_name = $prod_type = $prod_price = $prod_quantity = '';
         } else {
             $errors[] = "Error: " . $stmt->error;
         }
@@ -251,11 +250,6 @@ $con->close();
                                         <div class="form-text">Max file size: 5MB. Allowed types: JPG, JPEG, PNG, GIF</div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="prod_description" class="form-label">Description</label>
-                                <textarea class="form-control" id="prod_description" name="prod_description" rows="3"><?php echo htmlspecialchars($prod_description); ?></textarea>
                             </div>
                             
                             <div class="image-preview-container">
