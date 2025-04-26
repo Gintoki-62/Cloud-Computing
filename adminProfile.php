@@ -1,14 +1,4 @@
-<?php
-CREATE TABLE admins (
-    admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    admin_name VARCHAR(100) NOT NULL,
-    admin_gender VARCHAR(20),
-    admin_position VARCHAR(30),
-    admin_email VARCHAR(100) NOT NULL,
-    admin_phone VARCHAR(20),
-    admin_photo VARCHAR(200),
-    password VARCHAR(255) NOT NULL);
-?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -43,7 +33,7 @@ CREATE TABLE admins (
     </head>
     <body style="background-image: url('./assets/img/grand2.png');background-repeat: no-repeat;background-size: cover;background-position: center;">
     <?php
-     include 'config.php'; 
+     include '.vscode/config.php'; 
      session_start();  
 
      $admin_id = $_SESSION['admin_id'] ?? null;
