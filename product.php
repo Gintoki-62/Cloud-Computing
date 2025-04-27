@@ -135,7 +135,7 @@
 					<div class="single-product-item">
 						
 						<div class="product-image">
-							<img src="assets/img/products/<?php echo $row['prod_image']; ?>" alt="">
+							<img src="<?php echo $row['prod_image']; ?>" alt="">
 						</div>
 						<h3><?php echo $row['prod_name']; ?></h3>
 						<p class="product-price"><span>Price</span> RM  <?php echo $row['prod_price']; ?></p>

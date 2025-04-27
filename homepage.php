@@ -166,14 +166,6 @@ include '.vscode/config.php';
 		</div>
 	</div>
 
-	<!-- promotion -->
-	<section class="shop-banner">
-    	<div class="container text-center">
-        	<h3>Special Offer for <span class="orange-text">Graduates!</span></h3>
-        	<div class="sale-percent"><span>Get</span> 30% <span>Off</span></div>
-        	<a href="product.php" class="cart-btn btn-lg mt-3">Shop Now</a>
-        </div>
-    </section>
 
 	<!-- find our location -->
 	<div class="find-location blue-bg">

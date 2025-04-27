@@ -1,15 +1,16 @@
 <?php
+ob_start();
 	include '.vscode/config.php';
 	include 'headerr.php';
 
 	// Get the logged-in user's ID
-	$user_id = $_SESSION['user_id'];
+	$user_id = $_SESSION['user_id'] ?? null;
 
 	if (!$user_id) {
 		header("Location: login.php");
     	exit();
 	}
-
+	
 	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 		$prod_id = $_POST['prod_id'];
 		$quantity = (int)$_POST['quantity'];
@@ -41,6 +42,7 @@
 		$cart_id = $cart_row[0];
 	}
 	$cart_query->close();
+	ob_end_flush();
 	?>
 
 	<!-- breadcrumb-section -->
@@ -100,7 +102,7 @@
 							<tbody>
 								<tr class="table-body-row">
 									<td><?php echo $counter++; ?>.</td>
-									<td class="product-image"><img src="assets/img/products/<?php echo $row['prod_image']; ?>" alt=""></td>
+									<td class="product-image"><img src="<?php echo $row['prod_image']; ?>" alt=""></td>
 									<td class="product-name"><?php echo $row['prod_name']; ?></td>
 									<td class="product-price">RM <?php echo $row['prod_price']; ?></td>
 

@@ -90,6 +90,8 @@
                         <div class="col-lg-8 offset-lg-2 text-center">
                             <div class="breadcrumb-text">
                             <h1>Search Result for : <em> <?php echo htmlspecialchars($_GET['keyword']); ?></em></h1>
+                            <br/>
+                            <a href="homepage.php" title="Back"><img src="assets/img/left-arrow.png" width="70px" height="70px"></a>
                             </div>
                         </div>
                     </div>
@@ -104,7 +106,7 @@
                                 <div class="single-product-item">
                                     <div class="product-image">
                                         <a href="single-product.html">
-                                            <img src="assets/img/products/<?php echo $row['prod_image']; ?>" alt="">
+                                            <img src="<?php echo $row['prod_image']; ?>" alt="">
                                         </a>
                                     </div>
                                     <h3><?php echo $row['prod_name']; ?></h3>
