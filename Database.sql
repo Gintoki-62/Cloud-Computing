@@ -38,7 +38,7 @@ CREATE TABLE admins (
     admin_email VARCHAR(100) NOT NULL,
     admin_phone VARCHAR(20),
     admin_photo VARCHAR(200),
-    password VARCHAR(255) NOT NULL);
+    admin_password VARCHAR(255) NOT NULL);
 
 
 

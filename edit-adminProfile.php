@@ -5,7 +5,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
 -->
 <html>
     <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
@@ -33,18 +33,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
 	<link rel="stylesheet" href="assets/css/main.css">
 	<!-- responsive -->
 	<link rel="stylesheet" href="assets/css/responsive.css">
-    </head>
-<!----------------------------------------- get detail ----------------------------------->    
-    <body style="background-image: url('./assets/img/grand2.png');background-repeat: no-repeat;background-size: cover;background-position: center;   ">
+    </head> 
+<!----------------------------------------- get stud id ----------------------------------->    
+    <body style="background-image: url('./assets/img/grand2.png');background-repeat: no-repeat;background-size: cover;background-position: center; ">
     <?php
      include '.vscode/config.php'; 
-     session_start();  
+     include '.vscode/validationForm.php'; 
+     include '.vscode/validation_admin.php'; 
+     session_start();
 
      $admin_id = $_SESSION['admin_id'] ?? null;
-    
+
     if($_SERVER['REQUEST_METHOD']=='GET')
     {
-        
         $sql = "SELECT * FROM admins WHERE admin_id = '$admin_id'";
         
         $result = $conn->query($sql);
@@ -57,7 +58,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
             $phone = $row['admin_phone'];
             $email = $row['admin_email'];
             $gender = $row['admin_gender'];
-            $position = $row['admin_position'];
+            $admin_position = $row['admin_position'];
             $password = $row['admin_password']; 
         }
         else
@@ -72,37 +73,42 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
         $result->free();
         $conn->close();
     }
-    else
-    {
-        //post method 
-        //when usr use click on the update button
-        //retrieve user input
+    else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Post method
+        // When user clicks on the update button
+        // Retrieve user input
         $username = strtoupper(trim($_POST['username']));
         $gender = trim($_POST['gender']);
        $phone = trim($_POST['phone']);
        $email = trim($_POST['email']);
-       $position = strtoupper(trim($_POST['position']));
+       $admin_position = strtoupper(trim($_POST['admin_position']));
+
+        // Check if a new profile photo has been uploaded
+        if ($_FILES["profile_photo"]["size"] > 0) {
+            $profile_photo = $_FILES["profile_photo"]["name"];
+            $profile_photo_temp = $_FILES["profile_photo"]["tmp_name"];
+            $folder = "./assets/img/" . $profile_photo;
+
+            // Upload photo and check if it uploaded successfully
+            if (!move_uploaded_file($profile_photo_temp, $folder)) {
+                $profile_photo = "default.jpg";
+            }
+        } else {
+            // No new photo uploaded, use the existing photo
+            $profile_photo = $_POST['existing_photo'];
+        }
        
-       $profile_photo = $_FILES["profile_photo"]["name"];
-       $profile_photo_temp = $_FILES["profile_photo"]["tmp_name"];
-       $folder = "./assets/img/" . $profile_photo;
-       
-       // upload photo and check whether it uploaded successfully
-       if (!move_uploaded_file($profile_photo_temp, $folder)) {
-           $profile_photo = "default.jpg";
-       }
-        
-       $error = validationwithoutid();
+       $error = validation_ad();
        
         if(empty($error))//no error
         {
             //step 2
-             $sql = "UPDATE admins SET admin_name=?,admin_phone=?,admin_email=?,admin_position=?,admin_photo=? WHERE admin_id=?";
+             $sql = "UPDATE admins SET admin_name=?,admin_gender=?, admin_phone=?,admin_email=?,admin_position=?,admin_photo=? WHERE admin_id=?";
              
             //step 3
              $stmt = $conn->prepare($sql);
-             
-             $stmt->bind_param('sssssd',$username, $phone, $email, $position, $profile_photo, $admin_id);
+
+             $stmt->bind_param('ssssssd',$username,$gender, $phone, $email, $admin_position, $profile_photo, $admin_id);
              
              if($stmt->execute())
              {
@@ -118,6 +124,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
                      Member <b>%s</b> has been Update.
                      </div>
                          ',$username);
+                
+                         header("Location: adminProfile.php");
+                         exit();
              }
              else{
                  echo'<div class="error">Error, Cannot Update Record</div>';
@@ -125,10 +134,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
              $stmt->close();
              $conn->close();
         }else{
-            printf('<ul class = "errorr">
+            printf('<ul class = "errorr" 
+                                    style="
+                                    margin: 0px 90px 20px 90px;
+                                    padding: 30px;
+                                    border-radius: 20px;
+                                    box-shadow: 3px 3px 3px grey ;
+                                    background-color: rgba(251, 49, 49, 0.9);
+                                    color: white;">
                    <li>%s</li>
                    </ul>',implode('</li><li>',$error));
-            echo'</ul>';
         }
       
     }
@@ -136,14 +151,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
     ?>
         
 <!----------------------------------------- form ---------------------------------------->    
-    
 <br/>
     <form action="" method="POST" enctype="multipart/form-data" style="float:right; border: 2px solid gray; box-shadow: 3px 3px 3px grey ;
                                              margin: 0px 40px 40px 40px;
                                              padding: 40px 40px 80px 40px;
                                              border-radius: 50px">
-        
-    
 
         <table>
             <tr>
@@ -157,7 +169,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
                                          position: relative; 
                                          margin: 0px 30px 30px 0px; 
                                          border-radius: 300px;">
-                   <input type="file" name="profile_photo" accept="image/*" onchange="readURL(this);" title="Change Image" disabled style="position: absolute; 
+                   <input type="file" name="profile_photo" accept="image/*" onchange="readURL(this);" title="Change Image" style="position: absolute; 
                                                                                                                                   top: 0; 
                                                                                                                                   bottom: 0; 
                                                                                                                                   left: 0; 
@@ -165,6 +177,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
                                                                                                                                   z-index: 100; 
                                                                                                                                   opacity: 0; 
                                                                                                                                   border-radius: 300px;" /> 
+                   <input type="hidden" name="existing_photo" value="<?php echo $profile_photo; ?>" />
+
                    <img id="profile_pic" src="<?php echo isset($profile_photo) ? './assets/img/' . $profile_photo : './assets/img/default.jpg'; ?>"  style="max-height: 100%; 
                                                                            max-width: 100%; 
                                                                            vertical-align: bottom; 
@@ -175,40 +189,39 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHPWebPage.php to 
                 
         <tr>
             <td>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
-            <td><input class="search1" type="text" name="username" value="<?php echo isset($username)?$username:"" ?>"  style="width: 250px; padding:5px; border-radius: 6px; border: none;background-color:transparent;" readonly/></td>   
+            <td><input class="search1" type="text" name="username" value="<?php echo isset($username)?$username:"" ?>"  style="width: 550px;padding:5px; border-radius: 6px; border: none;"/></td>
         </tr>
         <tr>
             <td>Gender&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
             <td>&nbsp;&nbsp;&nbsp;
-                <input type="radio" name="gender" value="M" <?php if ($gender == 'M') echo "checked"; ?>> Male &nbsp;&nbsp;
-                <input type="radio" name="gender" value="F" <?php if ($gender == 'F') echo "checked"; ?>> Female<br>
+                <input type="radio" name="gender" value="M" <?php echo $gender=='M'?"checked=checked":"";?>/> Male &nbsp;&nbsp;
+                <input type="radio" name="gender" value="F"  <?php echo $gender=='F'?"checked=checked":"";?>/>&nbsp; Female
             </td>
         </tr>
         <tr>
             <td>Phone Number :</td>
-            <td><input class="search1" type="text" name="phone" value="<?php echo isset($phone)?$phone:"" ?>" placeholder="000-9999999" style="width: 250px;padding:5px; border-radius: 6px; border: none;background-color:transparent;" readonly/></td>
+            <td><input class="search1" type="text" name="phone" value="<?php echo isset($phone)?$phone:"" ?>" placeholder="000-9999999" style="width: 550px;padding:5px; border-radius: 6px; border: none;"/></td>
         </tr>
         <tr>
             <td>Email Address &nbsp;&nbsp;&nbsp;:</td>
-            <td><input class="search1" type="text" name="email" value="<?php echo isset($email)?$email:"" ?>"  style="width: 250px;padding:5px; border-radius: 6px; border: none;background-color:transparent;" readonly/></td>
+            <td><input class="search1" type="text" name="email" value="<?php echo isset($email)?$email:"" ?>"  style="width: 550px;padding:5px; border-radius: 6px; border: none;"/></td>
         </tr>
         <tr>
-            <td>Position &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
-            <td><input class="search1" type="text" name="position" value="<?php echo isset($position)?$position:"" ?>" style="width: 550px;padding:5px; border-radius: 6px; border: none;background-color:transparent;" readonly/></td>
+        <td>Position &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
+            <td><input class="search1" type="text" name="admin_position" value="<?php echo isset($admin_position)?$admin_position:"" ?>" style="width: 550px;padding:5px; border-radius: 6px; border: none;"/></td>
         </tr>
     </table>
         <br/>
         <div style="text-align: center">
-                <input class="cart-btn" type="button" value="EDIT" onclick="window.location.href='edit-adminProfile.php?admin_id=<?php echo $admin_id ?>'"/> &nbsp;&nbsp;&nbsp;
-                <input class="cart-btn" type="button" value="BACK" onclick="window.location.href='admin-product.php'"/>
+                <input class="cart-btn" type="submit" value="SAVE"/>
             </div>       
-    </form>  
-        
+    </form>   
     </body>
   
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="text/javascript">
     //focus on the ques 1
+    document.getElementsByName("username")[0].focus();
     
     function readURL(input) {
         console.log(input.files);

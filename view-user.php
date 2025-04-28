@@ -1,9 +1,5 @@
 <?php
-// Start session only if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+include 'admin-header.php';
 include '.vscode/config.php';
 
 // Establish database connection
@@ -18,7 +14,7 @@ $user_id = isset($_GET['id']) ? $con->real_escape_string($_GET['id']) : null;
 
 // Initialize error message
 $error_message = '';
-$user = null;
+$user_data = null;
 
 if ($user_id) {
     // Fetch user details
@@ -26,7 +22,7 @@ if ($user_id) {
     $result = $con->query($sql);
 
     if ($result->num_rows > 0) {
-        $user = $result->fetch_object();
+        $user_data = $result->fetch_object();
         $result->free();
     } else {
         $error_message = "User not found";
@@ -38,14 +34,26 @@ if ($user_id) {
 // Determine gender display if user exists
 $genderDisplay = 'Not specified';
 $genderClass = '';
-if ($user && $user->gender) {
-    $genderUpper = strtoupper(trim($user->gender));
+if ($user_data && isset($user_data->gender)) {
+    $genderUpper = strtoupper(trim($user_data->gender));
     if ($genderUpper === 'M') {
         $genderClass = 'gender-male';
         $genderDisplay = 'Male';
     } elseif ($genderUpper === 'F') {
         $genderClass = 'gender-female';
         $genderDisplay = 'Female';
+    }
+}
+
+// Set default profile picture path
+$defaultImage = 'assets/img/default.jpg';
+$profilePicture = $defaultImage;
+if ($user_data && isset($user_data->photo) && !empty($user_data->photo)) {
+    // Check if the stored path already includes 'assets/img/'
+    if (strpos($user_data->photo, 'assets/img/') === 0) {
+        $profilePicture = $user_data->photo;
+    } else {
+        $profilePicture = 'assets/img/' . $user_data->photo;
     }
 }
 ?>
@@ -55,7 +63,7 @@ if ($user && $user->gender) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $user ? "User Profile - " . htmlspecialchars($user->username) : "User Profile" ?></title>
+    <title><?= $user_data ? "User Profile - " . htmlspecialchars($user_data->username) : "User Profile" ?></title>
     <!-- Include Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Include Bootstrap Icons -->
@@ -132,11 +140,30 @@ if ($user && $user->gender) {
             text-align: center;
             margin: 50px 0;
         }
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .profile-info {
+            padding-left: 30px;
+        }
+        @media (max-width: 767px) {
+            .profile-picture-container {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .profile-info {
+                padding-left: 15px;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Header is included only once here -->
-    <?php include 'headerr.php'; ?>
 
     <!-- breadcrumb-section -->
     <div class="breadcrumb-section breadcrumb-bg">
@@ -144,8 +171,8 @@ if ($user && $user->gender) {
             <div class="row">
                 <div class="col-lg-8 offset-lg-2 text-center">
                     <div class="breadcrumb-text animate__animated animate__fadeInDown">
-                        <p>User Profile</p>
-                        <h1><?= $user ? htmlspecialchars($user->username) : "User Profile" ?></h1>
+                        <p>User Details</p>
+                        <h1><?= $user_data ? htmlspecialchars($user_data->username) : "User Profile" ?></h1>
                     </div>
                 </div>
             </div>
@@ -167,12 +194,15 @@ if ($user && $user->gender) {
                             <h3><i class="bi bi-exclamation-triangle-fill"></i> <?= htmlspecialchars($error_message) ?></h3>
                             <p>Please check the user ID and try again.</p>
                         </div>
-                    <?php elseif ($user): ?>
+                    <?php elseif ($user_data): ?>
                         <div class="profile-header">
                             <div class="row align-items-center">
-                                <div class="col-md-12">
-                                    <h2><?= htmlspecialchars($user->username) ?></h2>
-                                    <p class="text-muted mb-1">User ID: <?= htmlspecialchars($user->user_id) ?></p>
+                                <div class="col-md-2 profile-picture-container">
+                                    <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Profile Picture" class="profile-picture" onerror="this.src='<?= $defaultImage ?>'">
+                                </div>
+                                <div class="col-md-10 profile-info">
+                                    <h2><?= htmlspecialchars($user_data->username) ?></h2>
+                                    <p class="text-muted mb-1">User ID: <?= htmlspecialchars($user_data->user_id) ?></p>
                                     
                                     <span class="gender-badge <?= $genderClass ?>">
                                         <?= $genderDisplay ?>
@@ -192,7 +222,7 @@ if ($user && $user->gender) {
                                         <div class="detail-item">
                                             <div class="row">
                                                 <div class="col-sm-4 detail-label">Username:</div>
-                                                <div class="col-sm-8 detail-value"><?= htmlspecialchars($user->username) ?></div>
+                                                <div class="col-sm-8 detail-value"><?= htmlspecialchars($user_data->username) ?></div>
                                             </div>
                                         </div>
                                         <div class="detail-item">
@@ -219,14 +249,14 @@ if ($user && $user->gender) {
                                         <div class="detail-item">
                                             <div class="row">
                                                 <div class="col-sm-4 detail-label">Email:</div>
-                                                <div class="col-sm-8 detail-value"><?= htmlspecialchars($user->email) ?></div>
+                                                <div class="col-sm-8 detail-value"><?= htmlspecialchars($user_data->email) ?></div>
                                             </div>
                                         </div>
                                         <div class="detail-item">
                                             <div class="row">
                                                 <div class="col-sm-4 detail-label">Phone:</div>
                                                 <div class="col-sm-8 detail-value">
-                                                    <?= $user->phone ? htmlspecialchars($user->phone) : '<span class="empty-value">Not provided</span>' ?>
+                                                    <?= !empty($user_data->phone) ? htmlspecialchars($user_data->phone) : '<span class="empty-value">Not provided</span>' ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -234,7 +264,7 @@ if ($user && $user->gender) {
                                             <div class="row">
                                                 <div class="col-sm-4 detail-label">Address:</div>
                                                 <div class="col-sm-8 detail-value">
-                                                    <?= $user->address ? nl2br(htmlspecialchars($user->address)) : '<span class="empty-value">Not provided</span>' ?>
+                                                    <?= !empty($user_data->address) ? nl2br(htmlspecialchars($user_data->address)) : '<span class="empty-value">Not provided</span>' ?>
                                                 </div>
                                             </div>
                                         </div>

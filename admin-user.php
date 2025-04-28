@@ -1,6 +1,7 @@
 <?php
 $header = array(
     "user_id" => "User ID",
+    "photo" => "Photo",
     "username" => "Username",
     "gender" => "Gender",
     "email" => "Email",
@@ -9,7 +10,7 @@ $header = array(
     "action" => "Actions"
 );
 
-include 'headerr.php';
+include 'admin-header.php';
 include '.vscode/config.php';
 
 // Establish database connection
@@ -130,6 +131,10 @@ $result = $con->query($sql);
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+        .default-avatar {
+            font-size: 2rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +205,15 @@ $result = $con->query($sql);
                                     ?>
                                     <tr class="animate__animated animate__fadeIn">
                                         <td class="fw-bold"><?= htmlspecialchars($row->user_id) ?></td>
+                                        <td>
+                                            <?php if (!empty($row->photo)) : ?>
+                                                <img src="assets/img/<?= htmlspecialchars($row->photo) ?>" alt="User Photo" class="user-avatar">
+                                            <?php else : ?>
+                                                <div class="text-center">
+                                                    <i class="bi bi-person-circle default-avatar"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?= htmlspecialchars($row->username) ?></td>
                                         <td class="text-center">
                                             <?php if ($row->gender && !empty($genderDisplay)) : ?>
