@@ -26,8 +26,7 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     address VARCHAR(100),
-    photo VARCHAR(200),
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
 );
 
 CREATE TABLE admins (
@@ -38,10 +37,28 @@ CREATE TABLE admins (
     admin_email VARCHAR(100) NOT NULL,
     admin_phone VARCHAR(20),
     admin_photo VARCHAR(200),
-    admin_password VARCHAR(255) NOT NULL);
+    password VARCHAR(255) NOT NULL);
 
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10,2),
+    payment_method VARCHAR(50) DEFAULT 'Card',
+    payment_status VARCHAR(50) DEFAULT 'Successful',
+    address VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
-
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    prod_id VARCHAR(8) NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (prod_id) REFERENCES product(prod_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -------------Set PK AND FK----------------------->
 
