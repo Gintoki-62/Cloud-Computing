@@ -173,7 +173,7 @@ ob_start();
 						</tr>
 					</table>
 					<div class="cart-buttons">
-						<a href="checkout.html" class="boxed-btn black">Make the Payment</a>
+						<a href="checkout.php" class="boxed-btn black">Make the Payment</a>
 					</div>
 				</div>
 			</div>

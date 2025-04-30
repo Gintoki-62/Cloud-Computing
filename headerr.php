@@ -113,7 +113,12 @@
                                 <ul>
                                     <li class="current-list-item"><a href="homepage.php">Home</a></li>
                                     <li><a href="product.php">Product</a></li>
-                                    <li><a href="checkout.php">Check Out</a></li>
+                                    <?php
+                                    if (isset($_SESSION['user_id'])) {
+                                        // User is logged in: show Logout icon
+                                        echo '<li><a href="checkout.php">Checkout</a></li>';
+                                        echo '<li><a href="order_history.php">Order History</a></li>';
+                                    }?>
                                     <li>
                                         <div class="header-icons">
                                             <a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
