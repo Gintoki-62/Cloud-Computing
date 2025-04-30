@@ -202,7 +202,7 @@ $grandTotal = $subtotal + $shipping;
                         <tr>
                             <td>
                                 <div style="display: flex; align-items: center;">
-                                    <img class="productImage" src="assets/img/products/<?php echo $item['prod_image']; ?>" alt="">
+                                    <img class="productImage" src="<?php echo $item['prod_image']; ?>" alt="">
                                     <?= $item['prod_name'] ?>
                                 </div>
                             </td>

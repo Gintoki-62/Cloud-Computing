@@ -55,7 +55,7 @@ $shipping = 5.90;
 
     .checkout-container {
         max-width: 1200px;
-        height: 100vh;
+        height: 100%;
         margin: 40px auto;
         padding: 30px;
         background-color: #ffffff;
@@ -66,6 +66,7 @@ $shipping = 5.90;
 
     .checkout-section {
         display: flex;
+        height: 100%;
         flex-wrap: wrap;
         gap: 40px;
         align-items: stretch;
@@ -78,7 +79,6 @@ $shipping = 5.90;
         border-radius: 10px;
         padding: 25px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        height: 100%;
     }
 
     h2 {
@@ -378,8 +378,7 @@ $shipping = 5.90;
         }
     }
 </style>
-
-<div class="breadcrumb-section breadcrumb-bg">
+<div><div class="breadcrumb-section breadcrumb-bg">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2 text-center">
@@ -473,8 +472,7 @@ $shipping = 5.90;
                     <tr>
                         <td>
                             <div style="display: flex; align-items: center;">
-                                <img class="productImage" src="assets/img/products/<?php echo $item['prod_image']; ?>"
-                                    alt="">
+                                <img class="productImage" src="<?php echo $item['prod_image']; ?>" alt="">
                                 <?= $item['prod_name'] ?>
                             </div>
                         </td>
@@ -501,65 +499,61 @@ $shipping = 5.90;
         </div>
         <button type="button" class="checkout-button" onclick="window.location.href='order_history.php'">Back</button>
     </div>
-    <?php
-    echo "<script>console.log('PHP timestamp:', " . strtotime($order['order_date']) . ");</script>";
-    ?>
-    <script>
-        console.log('JS timestamp:', new Date().getTime() / 1000);
-    </script>
+</div></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const statusElements = {
-                one: document.querySelector(".one"),
-                two: document.querySelector(".two"),
-                three: document.querySelector(".three"),
-                four: document.querySelector(".four"),
-                five: document.querySelector(".five")
-            };
 
-            const paymentTimestamp = <?php echo strtotime($order['order_date']) * 1000; ?>;
 
-            function checkPaymentStatus() {
-                const currentTimestamp = new Date().getTime();
-                const timeDifference = (currentTimestamp - paymentTimestamp) / 1000; 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusElements = {
+            one: document.querySelector(".one"),
+            two: document.querySelector(".two"),
+            three: document.querySelector(".three"),
+            four: document.querySelector(".four"),
+            five: document.querySelector(".five")
+        };
 
-                console.log("Time difference:", timeDifference);
+        const paymentTimestamp = <?php echo strtotime($order['order_date']) * 1000; ?>;
 
-                Object.values(statusElements).forEach(el => el.classList.remove('active'));
+        function checkPaymentStatus() {
+            const currentTimestamp = new Date().getTime();
+            const timeDifference = (currentTimestamp - paymentTimestamp) / 1000;
 
-                if (timeDifference > 50) {
-                    statusElements['five'].classList.add('active');
-                    statusElements['four'].classList.add('active');
-                    statusElements['three'].classList.add('active');
-                    statusElements['two'].classList.add('active');
-                    statusElements['one'].classList.add('active');
-                } else if (timeDifference > 40) {
-                    statusElements['four'].classList.add('active');
-                    statusElements['three'].classList.add('active');
-                    statusElements['two'].classList.add('active');
-                    statusElements['one'].classList.add('active');
-                } else if (timeDifference > 30) {
-                    statusElements['three'].classList.add('active');
-                    statusElements['two'].classList.add('active');
-                    statusElements['one'].classList.add('active');
-                } else if (timeDifference > 20) {
-                    statusElements['two'].classList.add('active');
-                    statusElements['one'].classList.add('active');
-                } else if (timeDifference > 2) {
-                    statusElements['one'].classList.add('active');
-                }
+            console.log("Time difference:", timeDifference);
+
+            Object.values(statusElements).forEach(el => el.classList.remove('active'));
+
+            if (timeDifference > 50) {
+                statusElements['five'].classList.add('active');
+                statusElements['four'].classList.add('active');
+                statusElements['three'].classList.add('active');
+                statusElements['two'].classList.add('active');
+                statusElements['one'].classList.add('active');
+            } else if (timeDifference > 40) {
+                statusElements['four'].classList.add('active');
+                statusElements['three'].classList.add('active');
+                statusElements['two'].classList.add('active');
+                statusElements['one'].classList.add('active');
+            } else if (timeDifference > 30) {
+                statusElements['three'].classList.add('active');
+                statusElements['two'].classList.add('active');
+                statusElements['one'].classList.add('active');
+            } else if (timeDifference > 20) {
+                statusElements['two'].classList.add('active');
+                statusElements['one'].classList.add('active');
+            } else if (timeDifference > 2) {
+                statusElements['one'].classList.add('active');
             }
+        }
 
-            checkPaymentStatus();
-            setInterval(checkPaymentStatus, 2000);
-        });
+        checkPaymentStatus();
+        setInterval(checkPaymentStatus, 2000);
+    });
 
-    </script>
+</script>
 
 
 
-</div>
 
 <?php include 'footer.php'; ?>
 
